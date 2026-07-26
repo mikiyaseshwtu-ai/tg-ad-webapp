@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="am">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ማስታወቂያ ይመልከቱ</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+<!--
+  Adsgram rewarded-ad SDK. Sign up at https://adsgram.ai , create a Block,
+  and put your Block ID below where it says YOUR_BLOCK_ID.
+-->
+<script src="https://sad.adsgram.ai/js/sad.min.js"></script>
+
+<style>
+  body {
+    font-family: -apple-system, sans-serif;
+    background: #f2f2f2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    margin: 0;
+    text-align: center;
+    padding: 20px;
+    box-sizing: border-box;
+  }
+  h2 { color: #333; }
+  button {
+    background: #2ea6ff;
+    color: white;
+    border: none;
+    padding: 16px 32px;
+    font-size: 18px;
+    border-radius: 12px;
+    margin-top: 20px;
+  }
+  #status { margin-top: 16px; color: #555; }
+</style>
+</head>
+<body>
+
+<h2>ማስታወቂያ ተመልክተው ነጥብ ያግኙ</h2>
+<button id="watchBtn">🎬 ማስታወቂያ ይመልከቱ</button>
+<div id="status"></div>
+
+<script>
+  const tg = window.Telegram.WebApp;
+  tg.ready();
+  tg.expand();
+
+  // Initialize Adsgram — replace YOUR_BLOCK_ID with the real one from your
+  // Adsgram dashboard.
+  const AdController = window.Adsgram ? window.Adsgram.init({ blockId: "YOUR_BLOCK_ID" }) : null;
+
+  document.getElementById("watchBtn").addEventListener("click", () => {
+    const statusEl = document.getElementById("status");
+    if (!AdController) {
+      statusEl.innerText = "ማስታወቂያ ጫኚ (ad SDK) አልተጫነም። Block ID ማስተካከል ያስፈልጋል።";
+      return;
+    }
+    statusEl.innerText = "ማስታወቂያ በመጫን ላይ...";
+    AdController.show()
+      .then(() => {
+        // Ad watched successfully -> tell the bot to award points
+        statusEl.innerText = "✅ ተጠናቅቋል! ነጥብ በመላክ ላይ...";
+        tg.sendData("ad_watched");
+      })
+      .catch((err) => {
+        statusEl.innerText = "ማስታወቂያ አልታየም። እባክዎ እንደገና ይሞክሩ።";
+        console.error(err);
+      });
+  });
+</script>
+
+</body>
+</html>
